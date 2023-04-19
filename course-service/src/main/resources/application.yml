@@ -7,3 +7,5 @@ server:
   port: 8083
   servlet:
     context-path: /course-service
+  error:
+    include-stacktrace: never
