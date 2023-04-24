@@ -4,14 +4,14 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: cms-users-service
-          uri: lb://users-service
+        - id: user-service
+          uri: lb://user-service
           predicates:
-            - Path=/users-service/**
-        - id: courses-service
-          uri: lb://cms-courses-service
+            - Path=/user-service/**
+        - id: course-service
+          uri: lb://course-service
           predicates:
-            - Path=/courses-service/**
+            - Path=/course-service/**
 server:
   port: 9095
 eureka:

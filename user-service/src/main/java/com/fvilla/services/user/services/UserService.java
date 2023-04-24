@@ -1,5 +1,6 @@
 package com.fvilla.services.user.services;
 
+import com.fvilla.services.user.clients.CourseClient;
 import com.fvilla.services.user.dtos.UserDTO;
 import com.fvilla.services.user.mappers.UserMapper;
 import com.fvilla.services.user.models.User;
@@ -18,14 +19,14 @@ public class UserService {
 
     private final UserRepository repository;
     private final UserMapper userMapper;
+    private final CourseClient courseClient;
 
     public List<UserDTO> getAll() {
         return repository.findAll().stream().map(userMapper::toDto).toList();
     }
 
     public UserDTO getById(long id) {
-        return userMapper.toDto(repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + id)));
+        return userMapper.toDto(repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + id)));
     }
 
     public void save(UserDTO userDTO) {
@@ -34,12 +35,17 @@ public class UserService {
     }
 
     public void update(long id, UserDTO userDTO) {
-        User updateUser = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + id));
+        User updateUser = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + id));
         updateUser.setFirstName(userDTO.getFirstName());
         updateUser.setLastName(userDTO.getLastName());
         updateUser.setEmail(userDTO.getEmail());
         updateUser.setDateOfBirth(userDTO.getDateOfBirth());
+    }
+
+    public void addCourseToUser(long userId, long courseId) {
+        courseClient.get(courseId).ifPresent(course -> repository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + userId))
+                .getCourses().add(courseId));
     }
 
     public void deleteById(long id) {

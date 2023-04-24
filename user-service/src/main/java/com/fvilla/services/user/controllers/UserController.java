@@ -37,6 +37,12 @@ public class UserController {
         userService.update(id, userDTO);
     }
 
+    @PutMapping("/{id}/courses")
+    @Transactional
+    public void addCourseToUser(@PathVariable("id") long userId, long courseId) {
+        userService.addCourseToUser(userId, courseId);
+    }
+
     @DeleteMapping
     public void deleteById(@PathVariable("id") long id) {
         userService.deleteById(id);

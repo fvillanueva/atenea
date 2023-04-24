@@ -8,10 +8,12 @@ import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Getter
 @AllArgsConstructor
 public class UserDTO {
+
     @Size(min = 1, max = 100, message = "First name must be of 1 - 100 characters")
     private final String firstName;
     @Size(min = 1, max = 100, message = "Last name must be of 1 - 100 characters")
@@ -21,4 +23,5 @@ public class UserDTO {
     @Past
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private final LocalDate dateOfBirth;
+    private final Set<Long> courses;
 }
