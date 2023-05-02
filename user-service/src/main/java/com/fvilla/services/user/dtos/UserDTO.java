@@ -4,14 +4,16 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class UserDTO {
 
     @Size(min = 1, max = 100, message = "First name must be of 1 - 100 characters")
@@ -23,5 +25,5 @@ public class UserDTO {
     @Past
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private final LocalDate dateOfBirth;
-    private final Set<Long> courses;
+    private final List<CourseDTO> courses;
 }

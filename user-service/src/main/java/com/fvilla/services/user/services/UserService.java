@@ -1,6 +1,7 @@
 package com.fvilla.services.user.services;
 
 import com.fvilla.services.user.clients.CourseClient;
+import com.fvilla.services.user.dtos.CourseDTO;
 import com.fvilla.services.user.dtos.UserDTO;
 import com.fvilla.services.user.mappers.UserMapper;
 import com.fvilla.services.user.models.User;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -25,8 +27,12 @@ public class UserService {
         return repository.findAll().stream().map(userMapper::toDto).toList();
     }
 
-    public UserDTO getById(long id) {
-        return userMapper.toDto(repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + id)));
+    public UserDTO getById(long userId) {
+        return userMapper.toDto(repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + userId)), getUserCourses(userId));
+    }
+
+    public List<CourseDTO> getUserCourses(long userId) {
+        return repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + userId)).getCourses().stream().map(courseClient::get).toList();
     }
 
     public void save(UserDTO userDTO) {
@@ -43,9 +49,8 @@ public class UserService {
     }
 
     public void addCourseToUser(long userId, long courseId) {
-        courseClient.get(courseId).ifPresent(course -> repository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + userId))
-                .getCourses().add(courseId));
+        Optional.ofNullable(courseClient.get(courseId))
+                .ifPresent(course -> repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + userId)).getCourses().add(courseId));
     }
 
     public void deleteById(long id) {
