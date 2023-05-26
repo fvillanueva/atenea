@@ -31,7 +31,7 @@ public class UserService {
         return userMapper.toDto(repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + userId)), getUserCourses(userId));
     }
 
-    public List<CourseDTO> getUserCourses(long userId) {
+    private List<CourseDTO> getUserCourses(long userId) {
         return repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + userId)).getCourses().stream().map(courseClient::get).toList();
     }
 
@@ -49,8 +49,7 @@ public class UserService {
     }
 
     public void addCourseToUser(long userId, long courseId) {
-        Optional.ofNullable(courseClient.get(courseId))
-                .ifPresent(course -> repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + userId)).getCourses().add(courseId));
+        Optional.ofNullable(courseClient.get(courseId)).ifPresent(course -> repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + userId)).getCourses().add(courseId));
     }
 
     public void deleteById(long id) {
