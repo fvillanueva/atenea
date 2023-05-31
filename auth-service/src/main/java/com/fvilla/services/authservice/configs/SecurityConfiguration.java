@@ -1,6 +1,6 @@
 package com.fvilla.services.authservice.configs;
 
-import jakarta.servlet.Filter;
+import com.fvilla.services.authservice.configs.filters.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -13,11 +13,16 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.LongFunction;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class UserService {
+
+    private static final LongFunction<String> FAILED_TO_FIND_ID = id ->  String.format("Failed to find user with id %s", id);
 
     private final UserRepository repository;
     private final UserMapper userMapper;
@@ -28,11 +33,11 @@ public class UserService {
     }
 
     public UserDTO getById(long userId) {
-        return userMapper.toDto(repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + userId)), getUserCourses(userId));
+        return userMapper.toDto(repository.findById(userId).orElseThrow(() -> new EntityNotFoundException(FAILED_TO_FIND_ID.apply(userId))), getUserCourses(userId));
     }
 
-    private List<CourseDTO> getUserCourses(long userId) {
-        return repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + userId)).getCourses().stream().map(courseClient::get).toList();
+    private Set<CourseDTO> getUserCourses(long userId) {
+        return repository.findById(userId).orElseThrow(() -> new EntityNotFoundException(FAILED_TO_FIND_ID.apply(userId))).getCourses().stream().map(courseClient::get).collect(Collectors.toSet());
     }
 
     public void save(UserDTO userDTO) {
@@ -41,7 +46,7 @@ public class UserService {
     }
 
     public void update(long id, UserDTO userDTO) {
-        User updateUser = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + id));
+        User updateUser = repository.findById(id).orElseThrow(() -> new EntityNotFoundException(FAILED_TO_FIND_ID.apply(id)));
         updateUser.setFirstName(userDTO.getFirstName());
         updateUser.setLastName(userDTO.getLastName());
         updateUser.setEmail(userDTO.getEmail());
@@ -49,7 +54,7 @@ public class UserService {
     }
 
     public void addCourseToUser(long userId, long courseId) {
-        Optional.ofNullable(courseClient.get(courseId)).ifPresent(course -> repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Failed to find user with id " + userId)).getCourses().add(courseId));
+        Optional.ofNullable(courseClient.get(courseId)).ifPresent(course -> repository.findById(userId).orElseThrow(() -> new EntityNotFoundException(FAILED_TO_FIND_ID.apply(userId))).getCourses().add(courseId));
     }
 
     public void deleteById(long id) {

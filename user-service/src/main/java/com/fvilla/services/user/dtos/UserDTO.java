@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @AllArgsConstructor
@@ -25,5 +26,5 @@ public class UserDTO {
     @Past
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private final LocalDate dateOfBirth;
-    private final List<CourseDTO> courses;
+    private final Set<CourseDTO> courses;
 }
