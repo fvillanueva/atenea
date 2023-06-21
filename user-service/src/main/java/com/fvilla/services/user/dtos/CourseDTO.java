@@ -1,5 +1,5 @@
 package com.fvilla.services.user.dtos;
 
-public record CourseDTO(String name, String description) {
+public record CourseDTO(long id, String name, String description) {
 
 }

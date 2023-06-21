@@ -8,10 +8,18 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/user-service/**
+          filters:
+            - AuthenticationFilter
         - id: course-service
           uri: lb://course-service
           predicates:
             - Path=/course-service/**
+          filters:
+            - AuthenticationFilter
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth-service/**
 server:
   port: 9095
 eureka:

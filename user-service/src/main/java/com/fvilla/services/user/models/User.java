@@ -13,6 +13,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class User {
 
     @Id
