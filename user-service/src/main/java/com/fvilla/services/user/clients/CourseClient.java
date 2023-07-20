@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface CourseClient {
 
     @GetMapping("/courses/{id}")
-    CourseDTO get(@PathVariable("id") long id);
+    Optional<CourseDTO> find(@PathVariable("id") long id);
 
 }

@@ -1,6 +1,5 @@
 package com.fvilla.services.authservice.configs;
 
-import com.fvilla.services.authservice.mappers.UserCredentialMapper;
 import com.fvilla.services.authservice.repositories.UserCredentialRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

@@ -9,7 +9,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
-import java.util.Set;
+import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 @DecoratedWith(UserMapperDecarator.class)
@@ -22,6 +22,6 @@ public interface UserMapper {
     UserDTO toDto(User user);
 
     @Mapping(target = "courses", ignore = true)
-    UserDTO toDto(User user, Set<CourseDTO> courses);
+    UserDTO toDto(User user, List<CourseDTO> courses);
 
 }

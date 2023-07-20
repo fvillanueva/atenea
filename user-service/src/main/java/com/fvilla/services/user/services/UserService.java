@@ -11,18 +11,15 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.LongFunction;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class UserService {
-
-    private static final LongFunction<String> FAILED_TO_FIND_ID = id ->  String.format("Failed to find user with id %s", id);
 
     private final UserRepository repository;
     private final UserMapper userMapper;
@@ -32,29 +29,42 @@ public class UserService {
         return repository.findAll().stream().map(userMapper::toDto).toList();
     }
 
-    public UserDTO getById(long userId) {
-        return userMapper.toDto(repository.findById(userId).orElseThrow(() -> new EntityNotFoundException(FAILED_TO_FIND_ID.apply(userId))), getUserCourses(userId));
+    private User getById(long userId) {
+        return repository.findById(userId).orElseThrow(() -> new EntityNotFoundException(String.format("Failed to find user with id %s", userId)));
     }
 
-    private Set<CourseDTO> getUserCourses(long userId) {
-        return repository.findById(userId).orElseThrow(() -> new EntityNotFoundException(FAILED_TO_FIND_ID.apply(userId))).getCourses().stream().map(courseClient::get).collect(Collectors.toSet());
+    public UserDTO getByIdWithCourses(long userId) {
+        User user = getById(userId);
+        return userMapper.toDto(user, getCourses(user.getCourses()));
+    }
+
+    private List<CourseDTO> getCourses(List<Long> coursesId) {
+        return Optional.ofNullable(coursesId)
+                .map(course -> course.stream()
+                        .map(courseClient::find)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
     }
 
     public void save(UserDTO userDTO) {
         repository.save(userMapper.toEntity(userDTO));
-        log.info("Saving new user {} to the database", userDTO.getEmail());
+        log.info("Saving new user {} to the database", userDTO.email());
     }
 
-    public void update(long id, UserDTO userDTO) {
-        User updateUser = repository.findById(id).orElseThrow(() -> new EntityNotFoundException(FAILED_TO_FIND_ID.apply(id)));
-        updateUser.setFirstName(userDTO.getFirstName());
-        updateUser.setLastName(userDTO.getLastName());
-        updateUser.setEmail(userDTO.getEmail());
-        updateUser.setDateOfBirth(userDTO.getDateOfBirth());
+    public void update(long userId, UserDTO userDTO) {
+        User updateUser = getById(userId);
+        updateUser.setFirstName(userDTO.firstName());
+        updateUser.setLastName(userDTO.lastName());
+        updateUser.setEmail(userDTO.email());
+        updateUser.setDateOfBirth(userDTO.dateOfBirth());
     }
 
     public void addCourseToUser(long userId, long courseId) {
-        Optional.ofNullable(courseClient.get(courseId)).ifPresent(course -> repository.findById(userId).orElseThrow(() -> new EntityNotFoundException(FAILED_TO_FIND_ID.apply(userId))).getCourses().add(courseId));
+        User user = getById(userId);
+        Optional.ofNullable(user.getCourses())
+                .ifPresentOrElse(courses -> user.getCourses().add(courseId), () -> user.setCourses(List.of(courseId)));
     }
 
     public void deleteById(long id) {

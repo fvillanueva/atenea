@@ -5,7 +5,14 @@ import com.fvilla.services.user.services.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -23,7 +30,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserDTO getById(@PathVariable("id") long id) {
-        return userService.getById(id);
+        return userService.getByIdWithCourses(id);
     }
 
     @PostMapping

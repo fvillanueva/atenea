@@ -7,7 +7,7 @@ import com.fvilla.services.user.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.Set;
+import java.util.List;
 
 public abstract class UserMapperDecarator implements UserMapper {
 
@@ -16,7 +16,7 @@ public abstract class UserMapperDecarator implements UserMapper {
     private UserMapper userMapper;
 
     @Override
-    public UserDTO toDto(User user, Set<CourseDTO> courses) {
+    public UserDTO toDto(User user, List<CourseDTO> courses) {
         return userMapper.toDto(user, courses).toBuilder()
                 .courses(courses)
                 .build();
