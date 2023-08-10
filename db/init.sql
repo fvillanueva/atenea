@@ -1,0 +1,2 @@
+CREATE DATABASE IF NOT EXISTS `atenea-users`;
+CREATE DATABASE IF NOT EXISTS `atenea-courses`;
