@@ -1,0 +1,5 @@
+eureka:
+  client:
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://discovery-service:8761/eureka

@@ -22,8 +22,3 @@ spring:
             - Path=/auth-service/**
 server:
   port: 9095
-eureka:
-  client:
-    registerWithEureka: true
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka
