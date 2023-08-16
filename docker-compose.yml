@@ -1,0 +1,91 @@
+version: '3.8'
+services:
+  ## MySQL Docker Compose Config 
+  mysql-db:
+    image: mysql:8.0
+    container_name:  mysql-db
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+    ports:
+      - '3307:3306'
+    volumes:
+      - db:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+  
+  config-service:
+    image: villaf/config-service
+    container_name: config-service
+    ports:
+      - "8888:8888"
+
+  discovery-service:
+    image: villaf/discovery-service
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+  
+  auth-service:
+    image: villaf/auth-service
+    container_name: auth-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      config-service:
+        condition: service_started
+      discovery-service:
+        condition: service_started
+      mysql-db:
+        condition: service_healthy
+
+  user-service:
+    image: villaf/user-service
+    container_name: user-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      config-service:
+        condition: service_started
+      discovery-service:
+        condition: service_started
+      mysql-db:
+        condition: service_healthy
+
+  course-service:
+    image: villaf/course-service
+    container_name: course-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      config-service:
+        condition: service_started
+      discovery-service:
+        condition: service_started
+      mysql-db:
+        condition: service_healthy
+
+  gateway-service:
+    image: villaf/gateway-service
+    container_name: gateway-service
+    ports:
+      - "9095:9095"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      discovery-service:
+        condition: service_started
+
+volumes:
+  db:
+    driver: local
